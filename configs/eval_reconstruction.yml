@@ -1,5 +1,5 @@
 data:
-    path: datasets/data/ECD/
+    path: /tsukimi/datasets/UZH-FPV/ECD
     mode: events # events/time/frames
     window: 50000 # events/time/frames
 
