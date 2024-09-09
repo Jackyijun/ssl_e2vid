@@ -4,7 +4,7 @@ import numpy as np
 import random
 import torch
 
-from .encodings import events_to_voxel, events_to_channels, events_to_mask, get_hot_event_mask
+from .encodings import events_to_voxel, events_to_channels, events_to_mask, get_hot_event_mask, events_to_bilts
 
 
 class BaseDataLoader(torch.utils.data.Dataset):
@@ -175,6 +175,17 @@ class BaseDataLoader(torch.utils.data.Dataset):
         :return [B x H x W] event representation
         """
 
+        # Compute the range of each bin based on the normalized time span
+        # t_span = ts[-1] - ts[0]
+        # t_range = t_span // self.num_bins  # Floating-point division for more accurate bin width
+        # return events_to_bilts(
+        #     xs,
+        #     ys,
+        #     ts,
+        #     framesize,
+        #     t_range,
+        #     self.num_bins
+        #     )
         return events_to_voxel(
             xs,
             ys,
