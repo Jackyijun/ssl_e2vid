@@ -78,7 +78,6 @@ def events_to_voxel(xs, ys, ts, ps, num_bins, sensor_size=(180, 240)):
         voxel_bin = events_to_image(xs, ys, ps * weights, sensor_size=sensor_size)
         voxel.append(voxel_bin)
 
-    print("voxel_shape_is",torch.stack(voxel).shape)
     return torch.stack(voxel)
 
 def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):

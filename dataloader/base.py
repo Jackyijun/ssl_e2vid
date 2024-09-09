@@ -176,24 +176,24 @@ class BaseDataLoader(torch.utils.data.Dataset):
         """
 
         # Compute the range of each bin based on the normalized time span
-        # t_span = ts[-1] - ts[0]
-        # t_range = t_span // self.num_bins  # Floating-point division for more accurate bin width
-        # return events_to_bilts(
-        #     xs,
-        #     ys,
-        #     ts,
-        #     framesize,
-        #     t_range,
-        #     self.num_bins
-        #     )
-        return events_to_voxel(
+        t_span = ts[-1] - ts[0]
+        t_range = t_span // self.num_bins  # Floating-point division for more accurate bin width
+        return events_to_bilts(
             xs,
             ys,
             ts,
-            ps,
-            self.num_bins,
-            sensor_size=self.config["loader"]["resolution"],
-        )
+            (128,128),
+            t_range,
+            self.num_bins
+            )
+        # return events_to_voxel(
+        #     xs,
+        #     ys,
+        #     ts,
+        #     ps,
+        #     self.num_bins,
+        #     sensor_size=self.config["loader"]["resolution"],
+        # )
 
     @staticmethod
     def create_list_encoding(xs, ys, ts, ps):
