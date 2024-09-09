@@ -120,12 +120,12 @@ def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):
     
         # Update time_surface for past events (choose minimum time difference for each pixel)
         if len(past_indices) > 0:
-            np.maximum.at(time_surface_bin, (ys[past_indices], xs[past_indices]), t_norm[past_indices])
+            np.maximum.at(time_surface_bin, np.array([int(ys[past_indices][0]), int(xs[past_indices][0])]), t_norm[past_indices])
 
         # Temporary array to store future time differences, keeping only those cells that are still inf in time_surface
         if len(future_indices) > 0:
             future_time_surface_bin = np.full_like(time_surface_bin, np.inf)
-            np.minimum.at(future_time_surface_bin, (ys[future_indices], xs[future_indices]), t_norm[future_indices])
+            np.minimum.at(future_time_surface_bin, np.array([int(ys[future_indices][0]), int(xs[future_indices][0])]), t_norm[future_indices])
 
         # Combine past and future times, only filling future times where past times were not updated
         mask = np.isinf(time_surface_bin)  # Find where past updates have not occurred
@@ -147,7 +147,7 @@ def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):
     if norm:
         time_surface = time_surface / t_range
     
-    return time_surface
+    return time_surface.float()
 
 
 def events_to_channels(xs, ys, ps, sensor_size=(180, 240)):
