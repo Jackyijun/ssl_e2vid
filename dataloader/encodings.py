@@ -120,15 +120,12 @@ def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):
     
         # Update time_surface for past events (choose minimum time difference for each pixel)
         if len(past_indices) > 0:
-            np.maximum.at(time_surface_bin, np.array([int(ys[past_indices][0]), int(xs[past_indices][0])]), t_norm[past_indices])
+            np.maximum.at(time_surface_bin, np.array([int(ys[past_indices][0]), int(xs[past_indices][0])]), t_norm[past_indices][:1])
 
         # Temporary array to store future time differences, keeping only those cells that are still inf in time_surface
         if len(future_indices) > 0:
             future_time_surface_bin = np.full_like(time_surface_bin, np.inf)
-            print("shape of future time surface bin ", future_time_surface_bin.shape)
-            print("shape of middle ", np.array([int(ys[future_indices][0]), int(xs[future_indices][0])]).shape)
-            print("shape of t norm ", t_norm[future_indices].shape)
-            np.minimum.at(future_time_surface_bin, np.array([ys[future_indices], xs[future_indices]]), t_norm[future_indices])
+            np.minimum.at(future_time_surface_bin, np.array([int(ys[future_indices][0]), int(xs[future_indices][0])]), t_norm[future_indices][:1])
 
         # Combine past and future times, only filling future times where past times were not updated
         mask = np.isinf(time_surface_bin)  # Find where past updates have not occurred
@@ -146,17 +143,13 @@ def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):
         cur_idx = after_idx
         past_indices = future_indices
     
-    print("time_surface befoer norm ", time_surface)
     # Normalize to [-1, 1], while keep the empty cells as -1
     if norm:
         if t_range == torch.tensor(0.):
             t_range = torch.tensor(1)
         time_surface = time_surface / t_range
     
-    print("t range is ", t_range)
-    print(time_surface.float())
     return time_surface.float()
-    # return torch.rand(5,128,128)
 
 
 def events_to_channels(xs, ys, ps, sensor_size=(180, 240)):
