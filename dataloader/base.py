@@ -176,7 +176,11 @@ class BaseDataLoader(torch.utils.data.Dataset):
         """
 
         # Compute the range of each bin based on the normalized time span
-        t_span = ts[-1] - ts[0]
+        # print("ts.shape", ts.shape)
+        if ts.shape[0] == 0:
+            t_span = 1
+        else:
+            t_span = ts[-1] - ts[0]
         t_range = t_span // self.num_bins  # Floating-point division for more accurate bin width
         return events_to_bilts(
             xs,
@@ -185,7 +189,7 @@ class BaseDataLoader(torch.utils.data.Dataset):
             (128,128),
             t_range,
             self.num_bins
-            )
+        )
         # return events_to_voxel(
         #     xs,
         #     ys,
