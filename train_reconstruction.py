@@ -1,7 +1,7 @@
 import os
 import argparse
 
-import mlflow
+import wandb
 import numpy as np
 import torch
 from torch.optim import *
@@ -24,12 +24,9 @@ def train(args, config_parser):
     config = config_parser.config
     config["vis"]["bars"] = False
 
-    # log config
-    mlflow.set_experiment(config["experiment"])
-    mlflow.start_run()
-    mlflow.log_params(config)
-    mlflow.log_param("prev_model", args.prev_model)
-    config["prev_model"] = args.prev_model
+    # Initialize W&B and log config
+    wandb.init(project=config["experiment"], config=config)
+    wandb.config.update({"prev_model": args.prev_model})
 
     # initialize settings
     device = config_parser.device
@@ -71,8 +68,8 @@ def train(args, config_parser):
         model_flow.eval()
 
     # model directory
-    path_models = create_model_dir(args.path_models, mlflow.active_run().info.run_id)
-    mlflow.log_param("trained_model", path_models)
+    path_models = create_model_dir(args.path_models, wandb.run.id)
+    wandb.config.update({"trained_model": path_models})
     config_parser.log_config(path_models)
     config["trained_model"] = path_models
     config_parser.config = config
@@ -115,10 +112,11 @@ def train(args, config_parser):
                 x_reconstruction = None
 
             if data.seq_num >= len(data.files):
-                mlflow.log_metric(
-                    "loss_reconstruction", train_loss_reconstruction / (data.samples + 1), step=data.epoch
-                )
-                mlflow.log_metric("loss_flow", train_loss_flow / (data.samples + 1), step=data.epoch)
+                wandb.log({
+                    "loss_reconstruction": train_loss_reconstruction / (data.samples + 1),
+                    "loss_flow": train_loss_flow / (data.samples + 1),
+                    "epoch": data.epoch
+                })
 
                 with torch.no_grad():
                     if train_loss_reconstruction / (data.samples + 1) < best_loss_reconstruction:
@@ -226,7 +224,7 @@ def train(args, config_parser):
         if end_train:
             break
 
-    mlflow.end_run()
+    wandb.finish()
 
 
 if __name__ == "__main__":
