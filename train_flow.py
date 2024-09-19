@@ -80,7 +80,9 @@ def train(args, config_parser):
 
             # check new epoch
             if data.seq_num >= len(data.files):
-                wandb.log({"loss_flow": train_loss / (data.samples + 1)}, step=data.epoch)
+                wandb.log({"loss_flow": train_loss / (data.samples + 1),
+                            "epoch": data.epoch
+                })
 
                 with torch.no_grad():
                     if train_loss / (data.samples + 1) < best_loss:
