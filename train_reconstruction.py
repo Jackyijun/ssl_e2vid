@@ -27,6 +27,7 @@ def train(args, config_parser):
     # Initialize W&B and log config
     wandb.init(project=config["experiment"], config=config)
     wandb.config.update({"prev_model": args.prev_model})
+    config["prev_model"] = args.prev_model
 
     # initialize settings
     device = config_parser.device
