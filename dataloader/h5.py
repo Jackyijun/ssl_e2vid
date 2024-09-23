@@ -210,7 +210,7 @@ class H5Loader(BaseDataLoader):
             if self.batch_t0[batch] is None:
                 self.batch_t0[batch] = ts[0]
             ts -= self.batch_t0[batch]
-            xs, ys, ts, ps = self.event_formatting(xs, ys, ts, ps)
+            xs, ys, ts, ps, t_range = self.event_formatting(xs, ys, ts, ps)
 
             # data augmentation
             xs, ys, ps = self.augment_events(xs, ys, ps, batch)
@@ -225,7 +225,7 @@ class H5Loader(BaseDataLoader):
 
             # events to tensors
             inp_cnt = self.create_cnt_encoding(xs, ys, ts, ps)
-            inp_voxel = self.create_voxel_encoding(xs, ys, ts, ps)
+            inp_voxel = self.create_voxel_encoding(xs, ys, ts, ps, t_range)
             inp_list = self.create_list_encoding(xs, ys, ts, ps)
             inp_pol_mask = self.create_polarity_mask(ps)
 

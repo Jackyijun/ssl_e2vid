@@ -89,8 +89,9 @@ class BaseDataLoader(torch.utils.data.Dataset):
         ys = torch.from_numpy(ys.astype(np.float32))
         ts = torch.from_numpy(ts.astype(np.float32))
         ps = torch.from_numpy(ps.astype(np.float32)) * 2 - 1
-        ts = (ts - ts[0]) / (ts[-1] - ts[0])
-        return xs, ys, ts, ps
+        t_span = (ts[-1] - ts[0])
+        t_range = t_span // self.num_bins
+        return xs, ys, ts, ps, t_range
 
     def augment_events(self, xs, ys, ps, batch):
         """
@@ -161,7 +162,7 @@ class BaseDataLoader(torch.utils.data.Dataset):
 
         return events_to_channels(xs, ys, ps, sensor_size=self.config["loader"]["resolution"])
 
-    def create_voxel_encoding(self, xs, ys, ts, ps):
+    def create_voxel_encoding(self, xs, ys, ts, ps, t_range):
         """
         Creates a spatiotemporal voxel grid tensor representation with a certain number of bins,
         as described in Section 3.1 of the paper 'Unsupervised Event-based Learning of Optical Flow,
@@ -175,13 +176,7 @@ class BaseDataLoader(torch.utils.data.Dataset):
         :return [B x H x W] event representation
         """
 
-        # Compute the range of each bin based on the normalized time span
-        # print("ts.shape", ts.shape)
-        if ts.shape[0] == 0:
-            t_span = 1
-        else:
-            t_span = ts[-1] - ts[0]
-        t_range = t_span // self.num_bins  # Floating-point division for more accurate bin width
+        
         return events_to_bilts(
             xs,
             ys,
