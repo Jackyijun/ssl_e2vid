@@ -71,7 +71,6 @@ class BaseDataLoader(torch.utils.data.Dataset):
             else:
                 self.batch_augmentation[mechanism] = False
 
-    @staticmethod
     def event_formatting(self, xs, ys, ts, ps):
         """
         Reset sequence-specific variables.
