@@ -72,7 +72,7 @@ class BaseDataLoader(torch.utils.data.Dataset):
                 self.batch_augmentation[mechanism] = False
 
     @staticmethod
-    def event_formatting(xs, ys, ts, ps):
+    def event_formatting(self, xs, ys, ts, ps):
         """
         Reset sequence-specific variables.
         :param xs: [N] numpy array with event x location
