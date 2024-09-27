@@ -1,7 +1,7 @@
 experiment: Default
 
 data:
-    path: /centdata/UZH-FPV/training
+    path: /eastdata/UZH-FPV/training
     mode: events # events/time/frames
     window: 5000 # events/time/frames
     num_bins: 5

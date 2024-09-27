@@ -145,8 +145,6 @@ def events_to_bilts(xs, ys, ts, framesize, t_range, num_bins=5, norm=True):
     
     # Normalize to [-1, 1], while keep the empty cells as -1
     if norm:
-        if t_range == torch.tensor(0.):
-            t_range = torch.tensor(1)
         time_surface = time_surface / t_range
     
     return time_surface.float()

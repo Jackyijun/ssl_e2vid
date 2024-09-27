@@ -6,6 +6,8 @@ import torch
 
 from .encodings import events_to_voxel, events_to_channels, events_to_mask, get_hot_event_mask, events_to_bilts
 
+import os
+import pickle as pkl
 
 class BaseDataLoader(torch.utils.data.Dataset):
     """
@@ -41,6 +43,9 @@ class BaseDataLoader(torch.utils.data.Dataset):
             self.hot_events = [
                 torch.zeros(self.config["loader"]["resolution"]) for i in range(self.config["loader"]["batch_size"])
             ]
+
+        self.record_all_val = True
+        self.recorder_idx = 0
 
     @abstractmethod
     def __getitem__(self, index):
@@ -175,15 +180,35 @@ class BaseDataLoader(torch.utils.data.Dataset):
         :return [B x H x W] event representation
         """
 
-        
-        return events_to_bilts(
+        # bilts = events_to_bilts(
+        #     xs,
+        #     ys,
+        #     ts,
+        #     (128,128),
+        #     t_range,
+        #     self.num_bins
+        # )
+        bilts = events_to_voxel(
             xs,
             ys,
             ts,
-            (128,128),
-            t_range,
-            self.num_bins
+            ps,
+            self.num_bins,
+            sensor_size=self.config["loader"]["resolution"]
         )
+        if self.record_all_val:
+            cur_id = torch.cuda.current_device()
+            if cur_id == 0:
+                recorder = {
+                "bilts": bilts.cpu().numpy(),
+                }
+                os.makedirs("recs", exist_ok=True)
+                out_path = f"recs/recorder-{self.recorder_idx}.pkl"
+                with open(out_path, 'wb') as f:
+                    pkl.dump(recorder, f)
+                self.recorder_idx += 1
+
+        return bilts
         # return events_to_voxel(
         #     xs,
         #     ys,
